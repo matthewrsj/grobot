@@ -15,13 +15,22 @@ func randomString(ss []string) string {
 	return ss[rand.Intn(len(ss)-1)]
 }
 
+func randSleep() {
+	time.Sleep(time.Millisecond * time.Duration(rand.Intn(500)))
+}
+
+func ircReply(irc *hbot.Bot, m *hbot.Message, msg string) {
+	randSleep()
+	irc.Reply(m, msg)
+}
+
 // This trigger replies Hello when you say hello
 var SayInfoMessage = hbot.Trigger{
 	func(bot *hbot.Bot, m *hbot.Message) bool {
 		return m.Command == "PRIVMSG" && m.Content == "!info"
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, "Hello")
+		ircReply(irc, m, "Hello")
 		return false
 	},
 }
@@ -32,9 +41,9 @@ var LongTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && m.Content == "!long"
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, "This is the first message")
+		ircReply(irc, m, "This is the first message")
 		time.Sleep(5 * time.Second)
-		irc.Reply(m, "This is the second message!!!!")
+		ircReply(irc, m, "This is the second message!!!!")
 
 		return false
 	},
@@ -45,7 +54,7 @@ var ShrugTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!shrug")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, `¯\_(ツ)_/¯ -`+m.From)
+		ircReply(irc, m, `¯\_(ツ)_/¯ -`+m.From)
 		return false
 	},
 }
@@ -55,7 +64,7 @@ var FingerTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!finger")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, `╭∩╮(Ο_Ο)╭∩╮ -`+m.From)
+		ircReply(irc, m, `╭∩╮(Ο_Ο)╭∩╮ -`+m.From)
 		return false
 	},
 }
@@ -65,7 +74,7 @@ var LoveTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!love")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, `(♥_♥) -`+m.From)
+		ircReply(irc, m, `(♥_♥) -`+m.From)
 		return false
 	},
 }
@@ -82,9 +91,9 @@ var YeahTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && isYeah(m.Content)
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, "( •_•)")
-		irc.Reply(m, "( •_•)>⌐■-■")
-		irc.Reply(m, "(⌐■_■)")
+		ircReply(irc, m, "( •_•)")
+		ircReply(irc, m, "( •_•)>⌐■-■")
+		ircReply(irc, m, "(⌐■_■)")
 		return false
 	},
 }
@@ -149,13 +158,13 @@ var HelloTrigger = hbot.Trigger{
 	func(irc *hbot.Bot, m *hbot.Message) bool {
 		switch m.From {
 		case "mrsj":
-			irc.Reply(m, randomString(mrsjHellos))
+			ircReply(irc, m, randomString(mrsjHellos))
 		case "gnbeyer":
-			irc.Reply(m, randomString(gabiHellos))
+			ircReply(irc, m, randomString(gabiHellos))
 		case "tmarcu":
-			irc.Reply(m, randomString(tudorHellos))
+			ircReply(irc, m, randomString(tudorHellos))
 		default:
-			irc.Reply(m, fmt.Sprintf(randomString(hellos), m.From))
+			ircReply(irc, m, fmt.Sprintf(randomString(hellos), m.From))
 		}
 		return false
 	},
@@ -170,7 +179,7 @@ var MeTrigger = hbot.Trigger{
 			!isYeah(m.Content)
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, "I like it when you call me divadaddy ;)")
+		ircReply(irc, m, "I like it when you call me divadaddy ;)")
 		return false
 	},
 }
@@ -180,7 +189,7 @@ var FooTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!foo")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, "bar")
+		ircReply(irc, m, "bar")
 		return false
 	},
 }
@@ -190,7 +199,7 @@ var OvertimeTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!overtime")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, fmt.Sprintf("You get $%d of overtime pay!", rand.Intn(1000)))
+		ircReply(irc, m, fmt.Sprintf("You get $%d of overtime pay!", rand.Intn(1000)))
 		return false
 	},
 }
@@ -226,7 +235,7 @@ var EightBallTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!8ball")
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, randomString(eightBallResps))
+		ircReply(irc, m, randomString(eightBallResps))
 		return false
 	},
 }
@@ -249,7 +258,7 @@ var MockTrigger = hbot.Trigger{
 				reply = replaceAtIdx(reply, unicode.ToUpper(r), i)
 			}
 		}
-		irc.Reply(m, reply)
+		ircReply(irc, m, reply)
 		return false
 	},
 }
@@ -285,7 +294,7 @@ var ByeTrigger = hbot.Trigger{
 		return m.Command == "PRIVMSG" && isBye(m.Content)
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		irc.Reply(m, randomString(byes))
+		ircReply(irc, m, randomString(byes))
 		return false
 	},
 }
@@ -299,9 +308,9 @@ var NumIssuesTrigger = hbot.Trigger{
 		msg = strings.TrimSpace(msg)
 		open, closed, err := ghub.GetNumOpenClosedIssues("clearlinux", msg)
 		if err != nil {
-			irc.Reply(m, "sorry! I got an error: "+err.Error())
+			ircReply(irc, m, "sorry! I got an error: "+err.Error())
 		} else {
-			irc.Reply(m, fmt.Sprintf("that repo has %d open issues and %d closed issues", open, closed))
+			ircReply(irc, m, fmt.Sprintf("that repo has %d open issues and %d closed issues", open, closed))
 		}
 		return false
 	},
