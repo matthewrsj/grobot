@@ -30,21 +30,8 @@ var SayInfoMessage = hbot.Trigger{
 		return m.Command == "PRIVMSG" && m.Content == "!info"
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		ircReply(irc, m, "Hello")
-		return false
-	},
-}
-
-// This trigger replies Hello when you say hello
-var LongTrigger = hbot.Trigger{
-	func(bot *hbot.Bot, m *hbot.Message) bool {
-		return m.Command == "PRIVMSG" && m.Content == "!long"
-	},
-	func(irc *hbot.Bot, m *hbot.Message) bool {
-		ircReply(irc, m, "This is the first message")
-		time.Sleep(5 * time.Second)
-		ircReply(irc, m, "This is the second message!!!!")
-
+		ircReply(irc, m, "!info !shrug !finger !love !yeah !{hello|hi} !foo !overtime !8ball")
+		ircReply(irc, m, "!mock !{goodbye|later|bye} !numissues")
 		return false
 	},
 }

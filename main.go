@@ -34,7 +34,6 @@ func main() {
 	}
 
 	irc.AddTrigger(SayInfoMessage)
-	irc.AddTrigger(LongTrigger)
 	irc.AddTrigger(ShrugTrigger)
 	irc.AddTrigger(FingerTrigger)
 	irc.AddTrigger(LoveTrigger)
