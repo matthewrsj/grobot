@@ -4,6 +4,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
+	"time"
 
 	"github.com/whyrusleeping/hellabot"
 	log "gopkg.in/inconshreveable/log15.v2"
@@ -14,6 +16,7 @@ var nick = flag.String("nick", "grobot", "nickname for the bot")
 var channel = flag.String("chan", "#test", "channel to join")
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	flag.Parse()
 
 	hijackSession := func(bot *hbot.Bot) {
