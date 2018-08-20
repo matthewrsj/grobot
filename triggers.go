@@ -81,8 +81,8 @@ var LoveTrigger = hbot.Trigger{
 
 func isYeah(m string) bool {
 	m = strings.ToLower(m)
-	return strings.HasPrefix(m, "divadaddy: yeah") ||
-		strings.HasPrefix(m, "divadaddy: you rock") ||
+	return strings.HasPrefix(m, *nick+": yeah") ||
+		strings.HasPrefix(m, *nick+": you rock") ||
 		strings.HasPrefix(m, "!yeah")
 }
 
@@ -146,8 +146,8 @@ var mrsjHellos = []string{
 func isHello(message string) bool {
 	message = strings.ToLower(message)
 	return strings.HasPrefix(message, "!hello") ||
-		strings.HasPrefix(message, "divadaddy: hello") ||
-		strings.HasPrefix(message, "divadaddy: hi") ||
+		strings.HasPrefix(message, *nick+": hello") ||
+		strings.HasPrefix(message, *nick+": hi") ||
 		strings.HasPrefix(message, "!hi")
 }
 
@@ -173,13 +173,13 @@ var HelloTrigger = hbot.Trigger{
 var MeTrigger = hbot.Trigger{
 	func(bot *hbot.Bot, m *hbot.Message) bool {
 		return m.Command == "PRIVMSG" &&
-			strings.HasPrefix(m.Content, "divadaddy:") &&
+			strings.HasPrefix(m.Content, *nick+":") &&
 			!isHello(m.Content) &&
 			!isBye(m.Content) &&
 			!isYeah(m.Content)
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
-		ircReply(irc, m, "I like it when you call me divadaddy ;)")
+		ircReply(irc, m, "I like it when you call me "+*nick+" ;)")
 		return false
 	},
 }
@@ -282,8 +282,8 @@ var byes = []string{
 
 func isBye(msg string) bool {
 	msg = strings.ToLower(msg)
-	return strings.HasPrefix(msg, "divadaddy: bye") ||
-		strings.HasPrefix(msg, "divadaddy: goodbye") ||
+	return strings.HasPrefix(msg, *nick+": bye") ||
+		strings.HasPrefix(msg, *nick+": goodbye") ||
 		strings.HasPrefix(msg, "!goodbye") ||
 		strings.HasPrefix(msg, "!later") ||
 		strings.HasPrefix(msg, "!bye")
