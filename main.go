@@ -46,6 +46,8 @@ func main() {
 	irc.AddTrigger(ByeTrigger)
 	irc.AddTrigger(NumIssuesTrigger)
 	irc.AddTrigger(YeahTrigger)
+	irc.AddTrigger(UpdateScoreTrigger)
+	irc.AddTrigger(ScoreTrigger)
 	irc.Logger.SetHandler(log.StdoutHandler)
 
 	// Start up bot (this blocks until we disconnect)

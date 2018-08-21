@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"regexp"
 	"strings"
 	"time"
 	"unicode"
@@ -299,6 +300,52 @@ var NumIssuesTrigger = hbot.Trigger{
 		} else {
 			ircReply(irc, m, fmt.Sprintf("that repo has %d open issues and %d closed issues", open, closed))
 		}
+		return false
+	},
+}
+
+func scoreMessage(msg string) (string, int) {
+	scoreRe := regexp.MustCompile(`^(\S)+((\+\+)|(--))`)
+	match := scoreRe.FindString(msg)
+	if match == "" {
+		return "", 0
+	}
+
+	change := 0
+	switch {
+	case strings.HasSuffix(match, "++"):
+		change = 1
+		match = strings.Split(match, "++")[0]
+	case strings.HasSuffix(match, "--"):
+		change = -1
+		match = strings.Split(match, "--")[0]
+	default:
+		return "", 0
+	}
+
+	return match, change
+}
+
+var UpdateScoreTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		nick, ch := scoreMessage(m.Content)
+		return m.Command == "PRIVMSG" && ch != 0 && nick != m.From
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		nick, ch := scoreMessage(m.Content)
+		updateScore(nick, ch)
+		return false
+	},
+}
+
+var ScoreTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!score ")
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		nick := strings.TrimPrefix(m.Content, "!score ")
+		nick = strings.SplitN(nick, " ", 2)[0]
+		ircReply(irc, m, fmt.Sprintf("%s has a score of %d", nick, getScore(nick)))
 		return false
 	},
 }
