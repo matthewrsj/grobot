@@ -33,6 +33,8 @@ func main() {
 		panic(err)
 	}
 
+	initScoresFromFile()
+
 	irc.AddTrigger(SayInfoMessage)
 	irc.AddTrigger(ShrugTrigger)
 	irc.AddTrigger(FingerTrigger)
@@ -46,8 +48,12 @@ func main() {
 	irc.AddTrigger(ByeTrigger)
 	irc.AddTrigger(NumIssuesTrigger)
 	irc.AddTrigger(YeahTrigger)
+	irc.AddTrigger(SuckTrigger)
 	irc.AddTrigger(UpdateScoreTrigger)
 	irc.AddTrigger(ScoreTrigger)
+	irc.AddTrigger(ScoreOverviewTrigger)
+	irc.AddTrigger(ScoreAllTrigger)
+	irc.AddTrigger(ScoreTopTrigger)
 	irc.Logger.SetHandler(log.StdoutHandler)
 
 	// Start up bot (this blocks until we disconnect)

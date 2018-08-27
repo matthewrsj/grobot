@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -32,7 +33,8 @@ var SayInfoMessage = hbot.Trigger{
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
 		ircReply(irc, m, "!info !shrug !finger !love !yeah !{hello|hi} !foo !overtime !8ball")
-		ircReply(irc, m, "!mock !{goodbye|later|bye} !numissues")
+		ircReply(irc, m, "!mock <message> !{goodbye|later|bye} !numissues !score [<nick>]")
+		ircReply(irc, m, "!scoreall !scoretop <num>")
 		return false
 	},
 }
@@ -82,6 +84,23 @@ var YeahTrigger = hbot.Trigger{
 		ircReply(irc, m, "( •_•)")
 		ircReply(irc, m, "( •_•)>⌐■-■")
 		ircReply(irc, m, "(⌐■_■)")
+		return false
+	},
+}
+
+func isSuck(m string) bool {
+	m = strings.ToLower(m)
+	return strings.HasPrefix(m, *nick+": you suck")
+}
+
+var SuckTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		return m.Command == "PRIVMSG" && isSuck(m.Content)
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		ircReply(irc, m, "(⌐■_■)")
+		ircReply(irc, m, "( •_•)>⌐■-■")
+		ircReply(irc, m, "( •_•)")
 		return false
 	},
 }
@@ -164,7 +183,8 @@ var MeTrigger = hbot.Trigger{
 			strings.HasPrefix(m.Content, *nick+":") &&
 			!isHello(m.Content) &&
 			!isBye(m.Content) &&
-			!isYeah(m.Content)
+			!isYeah(m.Content) &&
+			!isSuck(m.Content)
 	},
 	func(irc *hbot.Bot, m *hbot.Message) bool {
 		ircReply(irc, m, "I like it when you call me "+*nick+" ;)")
@@ -338,6 +358,16 @@ var UpdateScoreTrigger = hbot.Trigger{
 	},
 }
 
+var ScoreOverviewTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		return m.Command == "PRIVMSG" && m.Content == "!score"
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		ircReply(irc, m, fmt.Sprintf("%s has a score of %d", m.From, getScore(m.From)))
+		return false
+	},
+}
+
 var ScoreTrigger = hbot.Trigger{
 	func(bot *hbot.Bot, m *hbot.Message) bool {
 		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!score ")
@@ -346,6 +376,33 @@ var ScoreTrigger = hbot.Trigger{
 		nick := strings.TrimPrefix(m.Content, "!score ")
 		nick = strings.SplitN(nick, " ", 2)[0]
 		ircReply(irc, m, fmt.Sprintf("%s has a score of %d", nick, getScore(nick)))
+		return false
+	},
+}
+
+var ScoreAllTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		return m.Command == "PRIVMSG" && m.Content == "!scoreall"
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		ircReply(irc, m, allScoresString())
+		return false
+	},
+}
+
+var ScoreTopTrigger = hbot.Trigger{
+	func(bot *hbot.Bot, m *hbot.Message) bool {
+		return m.Command == "PRIVMSG" && strings.HasPrefix(m.Content, "!scoretop ")
+	},
+	func(irc *hbot.Bot, m *hbot.Message) bool {
+		msg := strings.TrimPrefix(m.Content, "!scoretop ")
+		msg = strings.Split(msg, " ")[0]
+		top, err := strconv.Atoi(msg)
+		if err != nil {
+			ircReply(irc, m, "sorry, "+msg+" must be a valid integer, showing top 5")
+			top = 5
+		}
+		ircReply(irc, m, topScoresString(top))
 		return false
 	},
 }
